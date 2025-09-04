@@ -135,6 +135,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<{
   cerrar: []
   cerrarSegundoPlano: []
+  ocultarModal: []
 }>()
 
 // Estado para controlar el indicador de carga en segundo plano
@@ -143,6 +144,9 @@ const cargaSegundoPlanoActiva = ref(false)
 
 // Función para cerrar el modal
 const cerrarModal = () => {
+  // Siempre emitir el evento para ocultar el modal
+  emit('ocultarModal')
+
   if (props.progreso.estado === 'cargando') {
     // Si está cargando, mostrar indicador de carga en segundo plano
     cargaSegundoPlanoActiva.value = true

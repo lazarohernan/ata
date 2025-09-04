@@ -45,25 +45,25 @@
               type="text"
               required
               placeholder="Ej: Base de Datos SESAL Histórica"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors duration-200"
               :class="{ 'border-red-300 focus:ring-red-500': errors.name }"
             />
             <p v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name }}</p>
           </div>
 
           <!-- Configuración Rápida -->
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div class="bg-sky-50 border border-sky-200 rounded-lg p-4 mb-6">
             <div class="flex items-center justify-between mb-3">
-              <h4 class="text-sm font-medium text-blue-900">⚡ Configuración Rápida</h4>
+              <h4 class="text-sm font-medium text-sky-900">⚡ Configuración Rápida</h4>
               <button
                 type="button"
                 @click="fillAWSCredentials"
-                class="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
+                class="text-xs bg-sky-600 text-white px-3 py-1 rounded hover:bg-sky-700 transition-colors"
               >
                 Usar AWS MySQL
               </button>
             </div>
-            <p class="text-xs text-blue-700">
+            <p class="text-xs text-sky-700">
               Haz clic para llenar automáticamente los datos de la base de datos en AWS Lightsail.
             </p>
           </div>

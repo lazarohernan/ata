@@ -12,7 +12,7 @@
             <button
               @click="initializeDashboard"
               :disabled="loading"
-              class="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 rounded-md hover:bg-blue-200 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-4 py-2 text-sm font-medium text-sky-700 bg-sky-100 rounded-md hover:bg-sky-200 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -21,13 +21,13 @@
             </button>
             <button
               @click="$router.push('/data-sources')"
-              class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md hover:bg-indigo-200 transition-all duration-200 transform hover:scale-105"
+              class="px-4 py-2 text-sm font-medium text-sky-700 bg-sky-100 rounded-md hover:bg-sky-200 transition-all duration-200 transform hover:scale-105"
             >
               Ver Fuentes
             </button>
             <button
               @click="showEmbedModal = true"
-              class="px-4 py-2 text-sm font-medium text-green-700 bg-green-100 rounded-md hover:bg-green-200 transition-all duration-200 transform hover:scale-105"
+              class="px-4 py-2 text-sm font-medium text-sky-700 bg-sky-100 rounded-md hover:bg-sky-200 transition-all duration-200 transform hover:scale-105"
             >
               <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
@@ -191,9 +191,9 @@
                   @click="selectedTableType = 'basic'; updateTableSelection()"
                   :class="[
                     'p-4 rounded-lg border-2 text-left transition-all duration-200',
-                    selectedTableType === 'basic' 
-                      ? 'border-blue-500 bg-blue-50 text-blue-900' 
-                      : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-25'
+                    selectedTableType === 'basic'
+                      ? 'border-sky-500 bg-sky-50 text-sky-900'
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-sky-300 hover:bg-sky-25'
                   ]"
                 >
                   <div class="flex items-center space-x-2 mb-2">
@@ -202,14 +202,14 @@
                   </div>
                   <p class="text-xs text-gray-600">Datos resumidos por mes</p>
                 </button>
-                
+
                 <button
                   @click="selectedTableType = 'detail'; updateTableSelection()"
                   :class="[
                     'p-4 rounded-lg border-2 text-left transition-all duration-200',
-                    selectedTableType === 'detail' 
-                      ? 'border-purple-500 bg-purple-50 text-purple-900' 
-                      : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300 hover:bg-purple-25'
+                    selectedTableType === 'detail'
+                      ? 'border-sky-500 bg-sky-50 text-sky-900'
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-sky-300 hover:bg-sky-25'
                   ]"
                 >
                   <div class="flex items-center space-x-2 mb-2">
@@ -300,7 +300,7 @@
               <!-- Botón de Actualizar -->
               <button
                 @click="updateChartData"
-                class="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="px-4 py-2 text-sm text-white bg-sky-600 rounded-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
               >
                 🔄 Actualizar
               </button>
@@ -456,11 +456,11 @@
                   <input
                     :value="embedCode.url"
                     readonly
-                    class="flex-1 px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="flex-1 px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
                   >
                   <button
                     @click="copyToClipboard(embedCode.url)"
-                    class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 flex items-center space-x-2"
+                    class="px-4 py-2 bg-sky-600 text-white text-sm font-medium rounded-md hover:bg-sky-700 transition-colors duration-200 flex items-center space-x-2"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -521,7 +521,7 @@
           </button>
           <button
             @click="copyToClipboard(embedCode.url)"
-            class="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 flex items-center space-x-2"
+            class="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-sky-600 to-sky-700 rounded-lg hover:from-sky-700 hover:to-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition-all duration-200 flex items-center space-x-2"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />

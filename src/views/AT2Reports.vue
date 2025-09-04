@@ -4,6 +4,7 @@
     :progreso="progresoCarga"
     @cerrar="cerrarProgreso"
     @cerrar-segundo-plano="activarCargaSegundoPlano"
+    @ocultar-modal="ocultarModal"
   />
 
   <!-- Indicador de carga en segundo plano -->
@@ -66,11 +67,11 @@
           <template #content="{ summary }">
             <div class="flex justify-between items-center">
               <span class="text-sm text-gray-600">Total Conceptos:</span>
-              <span class="font-semibold text-blue-600">{{ summary?.total_concepts }}</span>
+              <span class="font-semibold text-sky-600">{{ summary?.total_concepts }}</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-sm text-gray-600">Total Atenciones:</span>
-              <span class="font-semibold text-blue-600">{{ formatearNúmero(summary?.total_atenciones) }}</span>
+              <span class="font-semibold text-sky-600">{{ formatearNúmero(summary?.total_atenciones) }}</span>
             </div>
           </template>
         </ReportCard>
@@ -137,11 +138,11 @@
           <template #content="{ summary }">
             <div class="flex justify-between items-center">
               <span class="text-sm text-gray-600">Municipios:</span>
-              <span class="font-semibold text-red-600">{{ summary?.total_municipios }}</span>
+              <span class="font-semibold text-sky-600">{{ summary?.total_municipios }}</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-sm text-gray-600">Total Atenciones:</span>
-              <span class="font-semibold text-red-600">{{ formatearNúmero(summary?.total_atenciones) }}</span>
+              <span class="font-semibold text-sky-600">{{ formatearNúmero(summary?.total_atenciones) }}</span>
             </div>
           </template>
         </ReportCard>
@@ -287,6 +288,12 @@ const activarCargaSegundoPlano = () => {
 const ocultarCargaSegundoPlano = () => {
   // Ocultar el indicador de carga en segundo plano
   mostrarCargaSegundoPlano.value = false
+}
+
+// Función para ocultar el modal
+const ocultarModal = () => {
+  // Cambiar el estado del progreso a 'inactivo' para ocultar el modal
+  progresoCarga.value.estado = 'inactivo'
 }
 
 // Inicialización optimizada
