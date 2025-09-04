@@ -1,6 +1,0 @@
-# Redirects for Single Page Application (SPA)
-# This ensures that all routes are handled by index.html for Vue Router
-/*    /index.html   200
-
-# API redirects (if you have API routes)
-/api/*  https://your-api-domain.com/api/:splat  200
