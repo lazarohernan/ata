@@ -1,8 +1,19 @@
 import axios from 'axios';
 
+// Configuración de base URL basada en el entorno
+const getBaseURL = () => {
+  // En producción (Netlify)
+  if (import.meta.env.PROD) {
+    // Usar variable de entorno de Netlify o fallback a la instancia de AWS
+    return import.meta.env.VITE_API_BASE_URL || 'http://3.141.99.154:3000/api';
+  }
+  // En desarrollo
+  return import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+};
+
 // Crear instancia de axios con configuración base optimizada
 const api = axios.create({
-  baseURL: 'http://3.141.99.154:3000/api', // Conectar a la nueva instancia Ubuntu Lightsail
+  baseURL: getBaseURL(),
   timeout: 60000, // Aumentar timeout para consultas grandes
   headers: {
     'Content-Type': 'application/json',
