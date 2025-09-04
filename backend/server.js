@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { testConnection, executeQuery, getCacheStats } = require('./mysql-config');
 
 const app = express();
@@ -14,6 +16,48 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
+
+// Configuración JWT
+const JWT_SECRET = process.env.JWT_SECRET || 'sesal_at2_jwt_secret_2024';
+const JWT_EXPIRE = '24h';
+
+// Función para generar token JWT
+function generateToken(user) {
+  return jwt.sign(
+    {
+      id: user.id,
+      username: user.username,
+      name: user.name,
+      role: user.role
+    },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRE }
+  );
+}
+
+// Middleware para verificar token JWT
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: 'Token de acceso requerido'
+    });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({
+        success: false,
+        message: 'Token inválido o expirado'
+      });
+    }
+    req.user = user;
+    next();
+  });
+}
 
 // Función para obtener estadísticas reales desde MySQL con cache
 async function getQuickStats() {
@@ -979,6 +1023,253 @@ app.get('/api/tables', (req, res) => {
     status: 'success',
     data: tables
   });
+});
+
+// ==================== ENDPOINTS DE AUTENTICACIÓN ====================
+
+// Endpoint de login
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Validación básica
+    if (!username || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Usuario y contraseña son requeridos'
+      });
+    }
+
+    // Buscar usuario en la base de datos
+    const userResult = await executeQuery(
+      'SELECT id, username, password_hash, name, email, role, is_active FROM users WHERE username = ? AND is_active = 1',
+      [username]
+    );
+
+    if (!userResult.success || userResult.data.length === 0) {
+      return res.status(401).json({
+        success: false,
+        message: 'Credenciales incorrectas'
+      });
+    }
+
+    const user = userResult.data[0];
+
+    // Verificar contraseña (para usuarios de prueba, verificar texto plano)
+    let isValidPassword = false;
+
+    if (user.password_hash.startsWith('$2b$')) {
+      // Es un hash bcrypt
+      isValidPassword = await bcrypt.compare(password, user.password_hash);
+    } else {
+      // Es una contraseña de prueba en texto plano
+      isValidPassword = (password === user.password_hash);
+    }
+
+    if (!isValidPassword) {
+      return res.status(401).json({
+        success: false,
+        message: 'Credenciales incorrectas'
+      });
+    }
+
+    // Actualizar último login
+    await executeQuery(
+      'UPDATE users SET last_login = NOW() WHERE id = ?',
+      [user.id]
+    );
+
+    // Generar token JWT
+    const token = generateToken(user);
+
+    // Preparar respuesta del usuario (sin contraseña)
+    const userResponse = {
+      id: user.id,
+      username: user.username,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    };
+
+    res.json({
+      success: true,
+      message: 'Login exitoso',
+      data: {
+        user: userResponse,
+        token: token
+      }
+    });
+
+  } catch (error) {
+    console.error('Error en login:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+// Endpoint para verificar token (middleware protegido)
+app.get('/api/auth/verify', authenticateToken, async (req, res) => {
+  try {
+    // El middleware ya validó el token, devolver información del usuario
+    const userResult = await executeQuery(
+      'SELECT id, username, name, email, role, last_login FROM users WHERE id = ? AND is_active = 1',
+      [req.user.id]
+    );
+
+    if (!userResult.success || userResult.data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado'
+      });
+    }
+
+    const user = userResult.data[0];
+
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: user.id,
+          username: user.username,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          lastLogin: user.last_login
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Error en verificación:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+// Endpoint para obtener perfil del usuario actual
+app.get('/api/auth/profile', authenticateToken, async (req, res) => {
+  try {
+    const userResult = await executeQuery(
+      'SELECT id, username, name, email, role, last_login, created_at FROM users WHERE id = ? AND is_active = 1',
+      [req.user.id]
+    );
+
+    if (!userResult.success || userResult.data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado'
+      });
+    }
+
+    const user = userResult.data[0];
+
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: user.id,
+          username: user.username,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          lastLogin: user.last_login,
+          createdAt: user.created_at
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Error al obtener perfil:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+// Endpoint para cambiar contraseña
+app.post('/api/auth/change-password', authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Contraseña actual y nueva son requeridas'
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'La nueva contraseña debe tener al menos 6 caracteres'
+      });
+    }
+
+    // Obtener usuario actual
+    const userResult = await executeQuery(
+      'SELECT password_hash FROM users WHERE id = ?',
+      [req.user.id]
+    );
+
+    if (!userResult.success || userResult.data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado'
+      });
+    }
+
+    const user = userResult.data[0];
+
+    // Verificar contraseña actual
+    let isValidCurrentPassword = false;
+
+    if (user.password_hash.startsWith('$2b$')) {
+      isValidCurrentPassword = await bcrypt.compare(currentPassword, user.password_hash);
+    } else {
+      isValidCurrentPassword = (currentPassword === user.password_hash);
+    }
+
+    if (!isValidCurrentPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Contraseña actual incorrecta'
+      });
+    }
+
+    // Hashear nueva contraseña
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Actualizar contraseña
+    const updateResult = await executeQuery(
+      'UPDATE users SET password_hash = ?, updated_at = NOW() WHERE id = ?',
+      [hashedPassword, req.user.id]
+    );
+
+    if (!updateResult.success) {
+      return res.status(500).json({
+        success: false,
+        message: 'Error al actualizar contraseña'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Contraseña actualizada exitosamente'
+    });
+
+  } catch (error) {
+    console.error('Error al cambiar contraseña:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
 });
 
 // Manejo de errores 404
