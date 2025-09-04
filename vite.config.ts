@@ -11,6 +11,7 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
+    target: 'es2022',
     rollupOptions: {
       output: {
         manualChunks: {
