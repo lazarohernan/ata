@@ -12,7 +12,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // Middleware
 app.use(cors({
-  origin: isProduction ? ['http://3.141.99.154:4000', 'http://3.141.99.154'] : ['http://localhost:4000', 'http://localhost:5173'],
+  origin: isProduction ? ['http://3.141.99.154:4000', 'http://3.141.99.154'] : ['http://localhost:4000', 'http://localhost:5173', 'http://127.0.0.1:5173'],
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
