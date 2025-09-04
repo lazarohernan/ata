@@ -103,6 +103,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth.ts'
+import api from '../services/api.ts'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -145,21 +146,15 @@ const handleLogin = async () => {
   loading.value = true
 
   try {
-    // Llamada a la API de autenticación
-    const response = await fetch('http://localhost:3000/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: form.username,
-        password: form.password
-      })
+    // Llamada a la API de autenticación usando el servicio configurado
+    const response = await api.post('/auth/login', {
+      username: form.username,
+      password: form.password
     })
 
-    const data = await response.json()
+    const data = response.data
 
-    if (!response.ok) {
+    if (!data.success) {
       throw new Error(data.message || 'Error en la autenticación')
     }
 

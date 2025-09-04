@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import api from '../services/api'
 
 export interface User {
   username: string
@@ -49,17 +50,15 @@ export const useAuthStore = defineStore('auth', () => {
       try {
         const userData = JSON.parse(storedUser)
 
-        // Verificar token con la API
-        const response = await fetch('http://localhost:3000/api/auth/verify', {
-          method: 'GET',
+        // Verificar token con la API usando el servicio configurado
+        const response = await api.get('/auth/verify', {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Authorization': `Bearer ${token}`
           }
         })
 
-        if (response.ok) {
-          const data = await response.json()
+        if (response.status === 200) {
+          const data = response.data
           if (data.success) {
             user.value = userData
             isAuthenticated.value = true
