@@ -3,9 +3,20 @@
   <LoadingProgress
     :progreso="progresoCarga"
     @cerrar="cerrarProgreso"
+    @cerrar-segundo-plano="activarCargaSegundoPlano"
   />
 
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+  <!-- Indicador de carga en segundo plano -->
+  <BackgroundLoader
+    :visible="mostrarCargaSegundoPlano"
+    :total="progresoCarga.total"
+    :completados="progresoCarga.completados"
+    :porcentaje="progresoCarga.porcentaje"
+    :estado="progresoCarga.estado"
+    @cerrar="ocultarCargaSegundoPlano"
+  />
+
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-emerald-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
       <!-- Header -->
@@ -13,7 +24,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h1 class="text-3xl font-bold text-gray-900 flex items-center">
-              <svg class="w-8 h-8 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-8 h-8 mr-3 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
               </svg>
               Reportes AT2 - Sistema SESAL
@@ -47,7 +58,7 @@
           :summary="resumenMaestro.resumen"
           :loading="estadosCarga.resumenMaestro || resumenMaestro.estado === 'cargando'"
           :error="resumenMaestro.estado === 'error' && !estadosCarga.resumenMaestro"
-          color-scheme="blue"
+          color-scheme="navy"
           loading-text="Cargando resumen..."
           error-text="Error al cargar resumen"
           @show-details="mostrarModal"
@@ -73,7 +84,7 @@
           :summary="reporteRecursos.resumen"
           :loading="estadosCarga.porRecurso || reporteRecursos.estado === 'cargando'"
           :error="reporteRecursos.estado === 'error' && !estadosCarga.porRecurso"
-          color-scheme="green"
+          color-scheme="institutional-green"
           loading-text="Cargando recursos..."
           error-text="Error al cargar recursos"
           @show-details="mostrarModal"
@@ -88,7 +99,7 @@
           :summary="reporteEdades.resumen"
           :loading="estadosCarga.porEdad || reporteEdades.estado === 'cargando'"
           :error="reporteEdades.estado === 'error' && !estadosCarga.porEdad"
-          color-scheme="purple"
+          color-scheme="institutional-blue"
           loading-text="Cargando edades..."
           error-text="Error al cargar edades"
           @show-details="mostrarModal"
@@ -118,7 +129,7 @@
           :summary="reporteGeografico.resumen"
           :loading="estadosCarga.geografico || reporteGeografico.estado === 'cargando'"
           :error="reporteGeografico.estado === 'error' && !estadosCarga.geografico"
-          color-scheme="red"
+          color-scheme="institutional-green"
           loading-text="Cargando geografía..."
           error-text="Error al cargar geografía"
           @show-details="mostrarModal"
@@ -136,7 +147,7 @@
         </ReportCard>
 
         <!-- Estadísticas Generales Optimizadas -->
-        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-6 text-white">
+        <div class="bg-gradient-to-r from-sky-400 to-sky-600 rounded-xl p-6 text-white">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Estadísticas Generales</h3>
             <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -183,6 +194,7 @@ import ReportCard from '../components/at2-reports/ReportCard.vue'
 import FiltrosReporte from '../components/at2-reports/FiltrosReporte.vue'
 import ModalReporte from '../components/at2-reports/ModalReporte.vue'
 import LoadingProgress from '../components/at2-reports/LoadingProgress.vue'
+import BackgroundLoader from '../components/at2-reports/BackgroundLoader.vue'
 
 // Usar el composable optimizado
 const {
@@ -219,6 +231,9 @@ const datosModal = ref({
   tiempoCarga: undefined as number | undefined,
   desdeCache: false
 })
+
+// Estados del BackgroundLoader
+const mostrarCargaSegundoPlano = ref(false)
 
 // Funciones del modal
 const mostrarModal = async (tipoReporte: string) => {
@@ -259,6 +274,19 @@ const reintentarModal = () => {
 const cerrarProgreso = () => {
   // Ocultar la barra de progreso
   progresoCarga.value.estado = 'inactivo'
+}
+
+// Funciones para BackgroundLoader
+const activarCargaSegundoPlano = () => {
+  // Activar el indicador de carga en segundo plano
+  mostrarCargaSegundoPlano.value = true
+  // Mantener el modal cerrado pero permitir que la carga continúe
+  progresoCarga.value.estado = 'cargando' // Mantener estado de carga
+}
+
+const ocultarCargaSegundoPlano = () => {
+  // Ocultar el indicador de carga en segundo plano
+  mostrarCargaSegundoPlano.value = false
 }
 
 // Inicialización optimizada
